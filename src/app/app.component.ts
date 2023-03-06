@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { ThemeService } from 'src/core/theme.service';
+
 
 @Component({
   selector: 'app-root',
@@ -7,4 +9,11 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'Sons-of-the-forest-save-game-editor';
+
+  constructor(
+    public theme: ThemeService,
+  ) {
+    this.theme.setDesign();
+  }
+
 }
