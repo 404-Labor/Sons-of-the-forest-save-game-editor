@@ -46,12 +46,12 @@ export class AppComponent {
 
               switch (inputFile.name) {
                 case 'GameStateSaveData.json':
-                  result.Data.GameState = JSON.parse(result.Data.GameState)
+                  result.Data.GameState = JSON.parse(result.Data.GameState);
                   break;
                 case 'SaveData.json':
-                  result.Data.HeldOnlyItems = JSON.parse(result.Data.HeldOnlyItems)
-                  result.Data.VailWorldSim = JSON.parse(result.Data.VailWorldSim)
-                  result.Data.VillagesAndCaves = JSON.parse(result.Data.VillagesAndCaves)
+                  result.Data.HeldOnlyItems = JSON.parse(result.Data.HeldOnlyItems);
+                  result.Data.VailWorldSim = JSON.parse(result.Data.VailWorldSim);
+                  result.Data.VillagesAndCaves = JSON.parse(result.Data.VillagesAndCaves);
                   break;
               }
 
@@ -151,9 +151,37 @@ export class AppComponent {
 
   download(filename: string) {
     const file = this.files.find(file => file.name === filename);
-    const jsonString = JSON.stringify(file?.data);
-    let escapedJsonString = jsonString.replace(/"/g, '\\"');
+    if (file) {
 
-    console.log(escapedJsonString);
+      switch (filename) {
+        case 'GameStateSaveData.json':
+          const GameState = JSON.stringify(file?.data.Data.GameState);
+          file.data.Data.GameState = GameState.replace(/"/g, '\"');
+          break;
+        case 'SaveData.json':
+          const HeldOnlyItems = JSON.stringify(file?.data.Data.HeldOnlyItems);
+          const VailWorldSim = JSON.stringify(file?.data.Data.VailWorldSim);
+          const VillagesAndCaves = JSON.stringify(file?.data.Data.VillagesAndCaves);
+          file.data.Data.GameState = HeldOnlyItems.replace(/"/g, '\"');
+          file.data.Data.GameState = VailWorldSim.replace(/"/g, '\"');
+          file.data.Data.GameState = VillagesAndCaves.replace(/"/g, '\"');
+          break;
+      }
+
+      const escapedJsonString = JSON.stringify(file.data);
+
+      let data = new Blob([escapedJsonString], { type: '.json' });
+      let a = document.createElement("a"),
+        url = URL.createObjectURL(data);
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => {
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      }, 0);
+
+    }
   }
 }
